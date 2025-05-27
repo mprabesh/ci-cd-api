@@ -1,7 +1,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const axios = require('axios');
-
+require('dotenv').config();
 const app = express();
 const PORT = 3000;
 const API_KEY = process.env.WEATHER_API_KEY; // Replace with your OpenWeatherMap API key
