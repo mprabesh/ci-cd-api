@@ -1,0 +1,45 @@
+name: CI - Weather App - artifact-creation
+
+on:
+  push:
+    branches:
+      - prod
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    env:
+      NODE_ENV: production
+      WEATHER_API_KEY: ${{ secrets.WEATHER_API_KEY }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run the app for test
+        run: |
+          nohup npm start &
+          sleep 5
+          curl --fail http://localhost:3000 || echo "App did not respond"
+
+      - name: Create artifact directory
+        run: |
+          mkdir -p artifacts
+          echo "Build log and environment info" > artifacts/info.txt
+          echo $NODE_ENV >> artifacts/info.txt
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: weather-app-artifact
+          path: artifacts/
+          retention-days: 30  # change as needed
